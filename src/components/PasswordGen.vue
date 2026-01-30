@@ -135,7 +135,7 @@ generatePassword()
 
 <template>
   <div class="password-gen">
-    <h1 class="title">Password Generator</h1>
+    <h1 class="title text-6xl font-extrabold mb-10 text-center">PassGen</h1>
 
     <!-- Password Display -->
     <div @click="copyToClipboard" class="glass-panel password-display">
@@ -207,11 +207,7 @@ generatePassword()
 }
 
 .title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  text-align: center;
   color: #ffffff;
-  margin-bottom: 1.5rem;
 }
 
 /* Glass panel base style */
