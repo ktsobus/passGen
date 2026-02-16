@@ -2,6 +2,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import ElasticSlider from './ElasticSlider.vue'
 import DecryptedText from './DecryptedText.vue'
+import AnimatedList from './AnimatedList.vue'
 
 // Cookie helpers
 const setCookie = (name, value, days = 365) => {
@@ -59,6 +60,9 @@ onMounted(() => {
 // Password state
 const password = ref('')
 const copied = ref(false)
+const passwordHistory = ref([])
+const historyOpen = ref(false)
+const historyIdCounter = ref(0)
 
 // Character sets
 const lowercaseChars = 'abcdefghijklmnopqrstuvwxyz'
@@ -83,9 +87,11 @@ const nonNumberPool = computed(() => {
   return pool
 })
 
-// Generate random character from a pool
+// Generate random character from a pool (cryptographically secure)
 const getRandomChar = (pool) => {
-  return pool[Math.floor(Math.random() * pool.length)]
+  const array = new Uint32Array(1)
+  crypto.getRandomValues(array)
+  return pool[array[0] % pool.length]
 }
 
 // Generate password
@@ -111,6 +117,12 @@ const generatePassword = () => {
     }
   }
 
+  if (password.value) {
+    historyIdCounter.value++
+    passwordHistory.value.unshift({ id: historyIdCounter.value, content: password.value })
+    if (passwordHistory.value.length > 20) passwordHistory.value.pop()
+  }
+
   password.value = newPassword
 }
 
@@ -124,6 +136,41 @@ const copyToClipboard = async () => {
     setTimeout(() => {
       copied.value = false
     }, 2000)
+  } catch (err) {
+    console.error('Failed to copy:', err)
+  }
+}
+
+// Password strength indicator
+const passwordStrength = computed(() => {
+  const pw = password.value
+  if (!pw) return { label: '', color: '', percent: 0 }
+
+  let score = 0
+
+  // Length scoring
+  if (pw.length >= 8) score++
+  if (pw.length >= 12) score++
+  if (pw.length >= 16) score++
+  if (pw.length >= 20) score++
+
+  // Character diversity scoring
+  if (/[a-z]/.test(pw)) score++
+  if (/[A-Z]/.test(pw)) score++
+  if (/[0-9]/.test(pw)) score++
+  if (/[^a-zA-Z0-9]/.test(pw)) score++
+
+  // Map score (0-8) to levels
+  if (score <= 2) return { label: 'Weak', color: '#ef4444', percent: 25 }
+  if (score <= 4) return { label: 'Fair', color: '#f97316', percent: 50 }
+  if (score <= 6) return { label: 'Good', color: '#eab308', percent: 75 }
+  return { label: 'Strong', color: '#27ff64', percent: 100 }
+})
+
+// Copy a history entry to clipboard
+const copyHistoryToClipboard = async (pw) => {
+  try {
+    await navigator.clipboard.writeText(pw)
   } catch (err) {
     console.error('Failed to copy:', err)
   }
@@ -151,6 +198,22 @@ generatePassword()
       />
       <span class="copy-hint" :class="{ copied: copied }">
         {{ copied ? 'Copied!' : 'Click to copy' }}
+      </span>
+    </div>
+
+    <!-- Strength Indicator -->
+    <div v-if="password" class="strength-container glass-panel">
+      <div class="strength-bar-track">
+        <div
+          class="strength-bar-fill"
+          :style="{
+            width: passwordStrength.percent + '%',
+            backgroundColor: passwordStrength.color,
+          }"
+        />
+      </div>
+      <span class="strength-label" :style="{ color: passwordStrength.color }">
+        {{ passwordStrength.label }}
       </span>
     </div>
 
@@ -194,6 +257,35 @@ generatePassword()
           <span>First & Last Character Can't Be a Number</span>
         </label>
       </div>
+    </div>
+
+    <!-- Password History -->
+    <div v-if="passwordHistory.length" class="history-section">
+      <button @click="historyOpen = !historyOpen" class="history-toggle">
+        History ({{ passwordHistory.length }})
+        <span class="history-chevron" :class="{ open: historyOpen }">&#9662;</span>
+      </button>
+      <AnimatedList
+        v-if="historyOpen"
+        :items="passwordHistory"
+        :max-items="20"
+        animation-type="scale"
+        enter-from="top"
+        hover-effect="scale"
+        :fade-edges="true"
+        :fade-edge-size="40"
+        fade-color="transparent"
+        height="14rem"
+        :item-gap="4"
+        @item-click="(item) => copyHistoryToClipboard(item.content)"
+      >
+        <template #default="{ item }">
+          <div class="history-item">
+            <span class="password-text history-password">{{ item.content }}</span>
+            <span class="history-copy-hint">copy</span>
+          </div>
+        </template>
+      </AnimatedList>
     </div>
   </div>
 </template>
@@ -328,5 +420,108 @@ generatePassword()
   height: 1.25rem;
   accent-color: #27ff64;
   cursor: pointer;
+}
+
+/* Strength indicator */
+.strength-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+}
+
+.strength-bar-track {
+  flex: 1;
+  height: 6px;
+  background: hsla(0, 0%, 100%, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.strength-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition:
+    width 0.4s ease,
+    background-color 0.4s ease;
+}
+
+.strength-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: color 0.4s ease;
+}
+
+/* History section */
+.history-section {
+  margin-top: 1rem;
+}
+
+.history-toggle {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  background: hsla(0, 0%, 100%, 0.08);
+  backdrop-filter: blur(0.75em);
+  -webkit-backdrop-filter: blur(0.75em);
+  border: none;
+  border-radius: 0.75rem;
+  color: hsla(0, 0%, 100%, 0.7);
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.history-toggle:hover {
+  background: hsla(0, 0%, 100%, 0.12);
+  color: #ffffff;
+}
+
+.history-chevron {
+  display: inline-block;
+  transition: transform 0.3s ease;
+  font-size: 0.75rem;
+}
+
+.history-chevron.open {
+  transform: rotate(180deg);
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.history-item:hover {
+  background: hsla(0, 0%, 100%, 0.1);
+}
+
+.history-password {
+  font-size: 0.85rem;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-copy-hint {
+  font-size: 0.7rem;
+  color: hsla(0, 0%, 100%, 0.4);
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+}
+
+.history-item:hover .history-copy-hint {
+  color: #27ff64;
 }
 </style>
