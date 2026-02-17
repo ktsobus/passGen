@@ -85,7 +85,9 @@ const nonNumberPool = computed(() => {
 
 // Generate random character from a pool
 const getRandomChar = (pool) => {
-  return pool[Math.floor(Math.random() * pool.length)]
+  const array = new Uint32Array(1)
+  crypto.getRandomValues(array)
+  return pool[array[0] % pool.length]
 }
 
 // Generate password
