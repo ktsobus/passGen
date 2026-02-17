@@ -164,7 +164,7 @@ const passwordStrength = computed(() => {
   if (score <= 2) return { label: 'Weak', color: '#ef4444', percent: 25 }
   if (score <= 4) return { label: 'Fair', color: '#f97316', percent: 50 }
   if (score <= 6) return { label: 'Good', color: '#eab308', percent: 75 }
-  return { label: 'Strong', color: '#27ff64', percent: 100 }
+  return { label: 'Strong', color: 'var(--color-accent)', percent: 100 }
 })
 
 // Copy a history entry to clipboard
@@ -350,7 +350,7 @@ generatePassword()
 }
 
 .copy-hint.copied {
-  color: #27ff64;
+  color: var(--color-accent);
 }
 
 /* Generate button */
@@ -360,22 +360,30 @@ generatePassword()
   margin-bottom: 1.5rem;
   font-weight: 600;
   color: #ffffff;
-  background: linear-gradient(135deg, hsla(142, 100%, 58%, 0.3), hsla(142, 100%, 58%, 0.15));
+  background: linear-gradient(
+    135deg,
+    hsla(var(--color-accent-h), var(--color-accent-s), var(--color-accent-l), 0.3),
+    hsla(var(--color-accent-h), var(--color-accent-s), var(--color-accent-l), 0.15)
+  );
   backdrop-filter: blur(0.75em);
   -webkit-backdrop-filter: blur(0.75em);
   border: none;
   border-radius: 1rem;
   cursor: pointer;
   box-shadow:
-    0 0 0 1px hsla(142, 100%, 58%, 0.4) inset,
+    0 0 0 1px hsla(var(--color-accent-h), var(--color-accent-s), var(--color-accent-l), 0.4) inset,
     0 8px 32px hsla(0, 0%, 0%, 0.2);
   transition: all 0.3s ease;
 }
 
 .glass-button:hover {
-  background: linear-gradient(135deg, hsla(142, 100%, 58%, 0.4), hsla(142, 100%, 58%, 0.25));
+  background: linear-gradient(
+    135deg,
+    hsla(var(--color-accent-h), var(--color-accent-s), var(--color-accent-l), 0.4),
+    hsla(var(--color-accent-h), var(--color-accent-s), var(--color-accent-l), 0.25)
+  );
   box-shadow:
-    0 0 0 1px hsla(142, 100%, 58%, 0.6) inset,
+    0 0 0 1px hsla(var(--color-accent-h), var(--color-accent-s), var(--color-accent-l), 0.6) inset,
     0 8px 32px hsla(0, 0%, 0%, 0.3);
   transform: translateY(-2px);
 }
@@ -418,7 +426,7 @@ generatePassword()
 .checkbox-input {
   width: 1.25rem;
   height: 1.25rem;
-  accent-color: #27ff64;
+  accent-color: var(--color-accent);
   cursor: pointer;
 }
 
@@ -522,6 +530,6 @@ generatePassword()
 }
 
 .history-item:hover .history-copy-hint {
-  color: #27ff64;
+  color: var(--color-accent);
 }
 </style>

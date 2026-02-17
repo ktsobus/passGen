@@ -46,7 +46,8 @@
         >
           <div class="relative h-full flex-grow overflow-hidden rounded-full bg-gray-400">
             <div
-              class="absolute h-full bg-[#27FF64] rounded-full"
+              class="absolute h-full rounded-full"
+              style="background-color: var(--color-accent)"
               :style="{ width: `${rangePercentage}%` }"
             />
           </div>
