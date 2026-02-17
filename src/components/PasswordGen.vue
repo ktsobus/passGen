@@ -51,6 +51,8 @@ watch(
   savePreferences,
 )
 
+
+
 // Keyboard shortcuts
 const handleKeydown = (e) => {
   const tag = e.target.tagName
@@ -156,6 +158,8 @@ const copyToClipboard = async () => {
 
 // Generate initial password
 generatePassword()
+// Auto-regenerate password when length changes
+watch(passwordLength, generatePassword)
 </script>
 
 <template>
