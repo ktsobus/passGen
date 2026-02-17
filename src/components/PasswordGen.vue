@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import ElasticSlider from './ElasticSlider.vue'
 import DecryptedText from './DecryptedText.vue'
 
@@ -51,9 +51,32 @@ watch(
   savePreferences,
 )
 
-// Load preferences on mount
+// Keyboard shortcuts
+const handleKeydown = (e) => {
+  const tag = e.target.tagName
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault()
+    generatePassword()
+  }
+
+  if (e.key === 'c' && (e.ctrlKey || e.metaKey)) {
+    if (password.value) {
+      e.preventDefault()
+      copyToClipboard()
+    }
+  }
+}
+
+// Load preferences and register shortcuts on mount
 onMounted(() => {
   loadPreferences()
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
 })
 
 // Password state
