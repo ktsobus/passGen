@@ -1,38 +1,74 @@
 # passGen
 
-This template should help get you started developing with Vue 3 in Vite.
+A sleek, web-based password generator built with Vue 3 and Vite. Generate secure passwords directly in your browser.
 
-## Recommended IDE Setup
+## Tech Stack
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- **Frontend:** Vue 3 (Composition API) + Vite
+- **Package Manager:** Bun
+- **Deployment:** Docker & Docker Compose
+- **Code Style:** Prettier
 
-## Recommended Browser Setup
+## Getting Started
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+### Prerequisites
 
-## Customize configuration
+- [Bun](https://bun.sh/) (recommended) or Node.js
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### Installation
 
-## Project Setup
-
-```sh
+```bash
+git clone https://github.com/BurgiSimon/passGen.git
+cd passGen
 bun install
 ```
 
-### Compile and Hot-Reload for Development
+### Development
 
-```sh
+```bash
 bun dev
 ```
 
-### Compile and Minify for Production
+The app will be available at `http://localhost:5173` (default Vite port).
 
-```sh
+### Production Build
+
+```bash
 bun run build
 ```
+
+## Docker
+
+Run the app in a container using Docker Compose:
+
+```bash
+docker compose up -d
+```
+
+Or build and run manually:
+
+```bash
+docker build -t passgen .
+docker run -d -p 3000:3000 passgen
+```
+
+## Project Structure
+
+```
+passGen/
+├── public/             # Static assets
+├── src/                # Vue application source
+├── server.js           # Production server
+├── Dockerfile          # Container image definition
+├── docker-compose.yml  # Docker Compose config
+├── vite.config.js      # Vite configuration
+└── index.html          # Entry HTML
+```
+
+## IDE Setup
+
+[VS Code](https://code.visualstudio.com/) with the [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) extension is recommended.
+
+## License
+
+This project is open source.
