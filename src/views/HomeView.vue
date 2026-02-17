@@ -1,8 +1,20 @@
 <script setup>
+import { computed, onMounted } from 'vue'
 import PasswordGen from '@/components/PasswordGen.vue'
 import DotGrid from '@/components/DotGrid.vue'
+import LaserFlow from '@/components/LaserFlow.vue'
 import MetallicPaint from '@/components/MetallicPaint.vue'
+import AppDock from '@/components/AppDock.vue'
 import lockSvg from '/lock.svg'
+import { useTheme } from '@/composables/useTheme.js'
+
+const { activeTheme, loadPersistedTheme, activeBackgroundId } = useTheme()
+
+const accentColor = computed(() => activeTheme.value?.color ?? '#27FF64')
+
+onMounted(() => {
+  loadPersistedTheme()
+})
 </script>
 
 <template>
@@ -30,20 +42,26 @@ import lockSvg from '/lock.svg'
         :contour="0.2"
         light-color="#ffffff"
         dark-color="#000000"
-        tint-color="#27FF64"
+        :tint-color="accentColor"
       />
     </div>
 
     <!-- Background - outside of main flex container -->
     <DotGrid
+      v-if="activeBackgroundId === 'dot-grid'"
       :dot-size="1"
       :gap="30"
-      base-color="#27FF64"
-      active-color="#27FF64"
+      :base-color="accentColor"
+      :active-color="accentColor"
       :proximity="150"
       :speed-trigger="100"
       :shock-radius="250"
       :shock-strength="5"
+      class="dot-grid-bg"
+    />
+    <LaserFlow
+      v-if="activeBackgroundId === 'laser-flow'"
+      :color="accentColor"
       class="dot-grid-bg"
     />
 
@@ -51,6 +69,8 @@ import lockSvg from '/lock.svg'
     <main>
       <PasswordGen />
     </main>
+
+    <AppDock />
   </div>
 </template>
 
@@ -102,5 +122,6 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-bottom: 5rem;
 }
 </style>
