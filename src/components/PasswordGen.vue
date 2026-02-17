@@ -118,6 +118,7 @@ const getRandomChar = (pool) => {
 // Generate password
 const generatePassword = () => {
   copied.value = false
+  navigator.vibrate?.(50)
   let newPassword = ''
   const length = passwordLength.value
 
@@ -148,6 +149,7 @@ const copyToClipboard = async () => {
   try {
     await navigator.clipboard.writeText(password.value)
     copied.value = true
+    navigator.vibrate?.(30)
     setTimeout(() => {
       copied.value = false
     }, 2000)
