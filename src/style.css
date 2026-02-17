@@ -1,1 +1,17 @@
 @import 'tailwindcss';
+
+:root {
+  --color-accent: #27ff64;
+  --color-accent-h: 142;
+  --color-accent-s: 100%;
+  --color-accent-l: 58%;
+}
+
+* {
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease,
+    accent-color 0.4s ease;
+}
